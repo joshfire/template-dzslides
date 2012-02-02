@@ -9,11 +9,26 @@
     "slides"
   ],
   "joshfire": {
+    "mustache":true,
     "devices": [
       {
         "devices": "desktop",
         "startfile": "index.html"
       }
-    ]
+    ],
+    "options": {
+      "schema": {
+        "slideshtml": {
+          "type": "string",
+          "title":"Slides HTML"
+        }
+      },
+      "form": [
+        {
+          "key": "slideshtml",
+          "type": "textarea"
+        }
+      ]
+    }
   }
 }
