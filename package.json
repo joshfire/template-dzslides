@@ -20,7 +20,8 @@
       "schema": {
         "slideshtml": {
           "type": "string",
-          "title":"Slides HTML"
+          "title":"Slides HTML",
+          "default":"<section>\r\n<!-- This is the first slide -->\r\n<h1>My Presentation</h1>\r\n<footer>by John Doe</footer>\r\n</section>"
         }
       },
       "form": [
@@ -28,10 +29,7 @@
           "key": "slideshtml",
           "type": "textarea"
         }
-      ],
-      "value": {
-        "slideshtml":"<section>\r\n<!-- This is the first slide -->\r\n<h1>My Presentation</h1>\r\n<footer>by John Doe</footer>\r\n</section>"
-      } 
+      ]
     }
   }
 }
