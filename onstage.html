@@ -230,7 +230,7 @@
   Dz.getUrl = function() {
     var u = window.location.hash.split("#")[1];
     if (!u) {
-      u = window.location.pathname.split("onstage.html")[0];
+      u = window.location.origin + window.location.pathname.split("onstage.html")[0];
       if (u) {
         window.location.hash = u.split("#")[0];
         return u;
