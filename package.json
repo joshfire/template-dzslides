@@ -28,7 +28,44 @@
           "key": "slideshtml",
           "type": "textarea"
         }
-      ]
+      ],
+      "value": {
+        "slideshtml":"
+<section>
+    <!-- This is the first slide -->
+    <h1>My Presentation</h1>
+    <footer>by John Doe</footer>
+</section>
+
+<section>
+    <h2>Part one</h2>
+</section>
+
+<section>
+    <h3>An incremental list</h3>
+    <ul class='incremental'>
+      <li>Item 1
+      <li>Item 2
+      <li>Item 3
+    </ul>
+</section>
+
+<section>
+  <q>
+    Soothe us with sweet lies. Is that a cooking show? No! I want to
+    live! There are still too many things I don't own!
+  </q>
+</section>
+
+<section>
+    <h2>Part two</h2>
+</section>
+
+<section>
+    <h3>An image</h3>
+    <img src='http://placekitten.com/g/800/600'>
+</section>"
+      } 
     }
   }
 }
