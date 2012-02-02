@@ -33,13 +33,27 @@
         "slideshtml": {
           "type": "string",
           "title":"HTML code of the slides",
-          "default":"<section>\r\n<!-- This is the first slide -->\r\n\t<h1>My Presentation</h1>\r\n\t<footer>by John Doe</footer>\r\n</section>\r\n\r\n<section>\r\n\t<h2>Part one</h2>\r\n</section>\r\n\r\n<section>\r\n\t<h3>An incremental list</h3>\r\n\t<ul class='incremental'>\r\n\t\t<li>Item 1\r\n\t\t<li>Item 2\r\n\t\t<li>Item 3\r\n\t</ul>\r\n</section>\r\n\r\n<section>\r\n\t<q>\r\n\t\tSoothe us with sweet lies. Is that a cooking show? No! I want to live! There are still too many things I don't own!\r\n\t</q>\r\n</section>\r\n\r\n<section>\r\n\t<h2>Part two</h2>\r\n</section>\r\n\r\n<section>\r\n\t<h3>An image</h3>\r\n\t<img src='http://placekitten.com/g/800/600'>\r\n</section>"
+          "default":"<!-- One section is one slide -->\r\n<section>\r\n<!-- This is the first slide -->\r\n\t<h1>My Presentation</h1>\r\n\t<footer>by John Doe</footer>\r\n</section>\r\n\r\n<section>\r\n\t<h2>Part one</h2>\r\n</section>\r\n\r\n<section>\r\n\t<h3>An incremental list</h3>\r\n\t<ul class='incremental'>\r\n\t\t<li>Item 1\r\n\t\t<li>Item 2\r\n\t\t<li>Item 3\r\n\t</ul>\r\n</section>\r\n\r\n<section>\r\n\t<q>\r\n\t\tSoothe us with sweet lies. Is that a cooking show? No! I want to live! There are still too many things I don't own!\r\n\t</q>\r\n</section>\r\n\r\n<section>\r\n\t<h2>Part two</h2>\r\n</section>\r\n\r\n<section>\r\n\t<h3>An image</h3>\r\n\t<img src='http://placekitten.com/g/800/600'>\r\n</section>"
+        },
+        "theme" : {
+          "title": "Theme",
+          "description": "a color and style theme for your slides",
+          "type": "string",
+          "enum": [
+            "white"
+          ]
         }
       },
       "form": [
         {
           "key": "slideshtml",
           "type": "textarea"
+        },
+        {
+          "key": "theme",
+          "titleMap": {
+            "white": "White"
+          }
         }
       ]
     }
