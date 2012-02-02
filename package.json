@@ -1,0 +1,19 @@
+{
+  "name": "dzslides",
+  "fullName": "DZ Slides",
+  "description": "Edit your slides directly in the Factory using simple HTML markup.",
+  "version": "0.0.1",
+  "keywords": [
+    "presentation",
+    "tool",
+    "slides"
+  ],
+  "joshfire": {
+    "devices": [
+      {
+        "devices": "desktop",
+        "startfile": "index.html"
+      }
+    ]
+  }
+}
