@@ -1,6 +1,6 @@
 {
   "name": "dzslides",
-  "fullName": "DZ Slides",
+  "fullName": "Slides",
   "description": "Edit your slides directly in the Factory using simple HTML markup.\r\nIn a browser, you can activate the dual screen mode by adding \"onstage.html\" to the URL of your slides",
   "version": "0.0.1",
   "keywords": [
@@ -9,6 +9,10 @@
     "slides"
   ],
   "joshfire": {
+    "images": {
+      "small":"marketing/small.jpg",
+      "big":"marketing/big.png"
+    },
     "mustache":true,
     "devices": [
       {
