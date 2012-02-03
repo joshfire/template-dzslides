@@ -3,6 +3,8 @@
 <meta charset="utf-8">
 <title>{{{Joshfire.factory.config.app.name}}}</title>
 
+<script data-joshfire-bootstrap></script>
+
 <!-- Your Slides -->
 
 {{{Joshfire.factory.config.template.options.slideshtml}}}
@@ -165,6 +167,7 @@
       || aEvent.shiftKey) {
       return;
     }
+    console.log("keycode", aEvent.keyCode);
     if ( aEvent.keyCode == 37 // left arrow
       || aEvent.keyCode == 38 // up arrow
       || aEvent.keyCode == 33 // page up
@@ -190,6 +193,13 @@
     if (aEvent.keyCode == 32) { // space
       aEvent.preventDefault();
       this.toggleContent();
+    }
+
+    // Joshfire Factory additions:
+    // pressing S goes to "stage mode" 
+    if (aEvent.keyCode == 83) { // S
+      aEvent.preventDefault();
+      this.gotoOnStage();
     }
   }
 
@@ -416,6 +426,15 @@
     for (var i = 2; i < arguments.length; i++)
       aMsg.push(encodeURIComponent(arguments[i]));
     aWin.postMessage(aMsg.join(" "), "*");
+  }
+
+  /**
+   * Goes to the onstage view
+   * Added by Joshfire, not so much in the spirit of DZ Slides as this page should be independent
+   */
+  Dz.gotoOnStage = function() {
+    //
+    window.location.href = "onstage.html#" + window.location.href;
   }
 
   window.onload = Dz.init.bind(Dz);
