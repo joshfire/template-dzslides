@@ -303,7 +303,12 @@
       aEvent.preventDefault();
       this.toggleView();
     }
-    
+    // Joshfire Factory additions:
+    // pressing S goes to "stage mode" 
+    if (aEvent.keyCode == 83) { // S
+      aEvent.preventDefault();
+      this.gotoOnStage();
+    }
   }
 
   /* Touch Events */
@@ -569,6 +574,11 @@
     for (var i = 2; i < arguments.length; i++)
       aMsg.push(encodeURIComponent(arguments[i]));
     aWin.postMessage(aMsg.join(" "), "*");
+  }
+
+  // Added by Joshfire, not so much in the spirit of DZ Slides as this page should be independent
+  Dz.gotoOnStage = function() {
+    window.location.href = "onstage.html#" + window.location.href;
   }
   
   function init() {
