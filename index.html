@@ -16,14 +16,28 @@
 <link href='http://fonts.googleapis.com/css?family=Oswald' rel='stylesheet'>
 
 <style>
-  html { background-color: black; }
-  body { background-color: white; }
+  html, .view body { background-color: black; counter-reset: slideidx; }
+  body, .view section { background-color: white; border-radius: 12px }
   /* A section is a slide. It's size is 800x600, and this will never change */
-  section {
+  section, .view head > title {
       /* The font from Google */
       font-family: 'Oswald', arial, serif;
-      font-size: 40px;
+      font-size: 30px;
   }
+
+  .view section:after {
+    counter-increment: slideidx;
+    content: counter(slideidx, decimal-leading-zero);
+    position: absolute; bottom: -80px; right: 100px;
+    color: white;
+  }
+
+  .view head > title {
+    color: white;
+    text-align: center;
+    margin: 1em 0 1em 0;
+  }
+
   h1, h2 {
     margin-top: 200px;
     text-align: center;
@@ -37,29 +51,51 @@
       margin: 50px 200px;
   }
 
-  q {
-    display: inline-block;
-    width: 700px;
-    height: 600px;
+  p {
+    margin: 75px;
+    font-size: 50px;
+  }
+
+  blockquote {
+    height: 100%;
     background-color: black;
     color: white;
     font-size: 60px;
     padding: 50px;
   }
+  blockquote:before {
+    content: open-quote;
+  }
+  blockquote:after {
+    content: close-quote;
+  }
 
-  img, video {
-    width: 800px;
-    height: 600px;
-    position: absolute;
-    top: 0;
+  /* Figures are displayed full-page, with the caption
+     on top of the image/video */
+  figure {
     background-color: black;
-    z-index: -1;
+    width: 100%;
+    height: 100%;
+  }
+  figure > * {
+    position: absolute;
+  }
+  figure > img, figure > video {
+    width: 100%; height: 100%;
+  }
+  figcaption {
+    margin: 70px;
+    font-size: 50px;
   }
 
   footer {
     position: absolute;
-    bottom: 10px;
-    right: 20px;
+    bottom: 0;
+    width: 100%;
+    padding: 40px;
+    text-align: right;
+    background-color: #F3F4F8;
+    border-top: 1px solid #CCC;
   }
 
   /* Transition effect */
@@ -68,10 +104,20 @@
      https://developer.mozilla.org/en/CSS/CSS_transitions
      How to use CSS3 Transitions: */
   section {
-      -moz-transition: left 400ms linear 0s;
-      -webkit-transition: left 400ms linear 0s;
-      -ms-transition: left 400ms linear 0s;
-      transition: left 400ms linear 0s;
+    -moz-transition: left 400ms linear 0s;
+    -webkit-transition: left 400ms linear 0s;
+    -ms-transition: left 400ms linear 0s;
+    transition: left 400ms linear 0s;
+  }
+  .view section {
+    -moz-transition: none;
+    -webkit-transition: none;
+    -ms-transition: none;
+    transition: none;
+  }
+
+  .view section[aria-selected] {
+    border: 5px red solid;
   }
 
   /* Before */
@@ -87,11 +133,17 @@
   .incremental > * { opacity: 1; }
 
   /* The current item */
-  .incremental > *[aria-selected] { color: red; opacity: 1; }
+  .incremental > *[aria-selected] { opacity: 1; }
 
   /* The items to-be-selected */
-  .incremental > *[aria-selected] ~ * { opacity: 0.2; }
+  .incremental > *[aria-selected] ~ * { opacity: 0; }
 
+  /* The progressbar, at the bottom of the slides, show the global
+     progress of the presentation. */
+  #progress-bar {
+    height: 2px;
+    background: #AAA;
+  }
 </style>
 
 <!-- {{{{ dzslides core
@@ -108,27 +160,69 @@
 #
 -->
 
+<div id="progress-bar"></div>
+
 <!-- Default Style -->
 <style>
-  * { margin: 0; padding: 0; }
+  * { margin: 0; padding: 0; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; }
   details { display: none; }
   body {
     width: 800px; height: 600px;
     margin-left: -400px; margin-top: -300px;
     position: absolute; top: 50%; left: 50%;
     overflow: hidden;
+    display: none;
   }
+  .view body {
+    position: static;
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
+    display: inline-block;
+    overflow: visible; overflow-x: hidden;
+    /* undo Dz.onresize */
+    transform: none !important;
+    -moz-transform: none !important;
+    -webkit-transform: none !important;
+    -o-transform: none !important;
+    -ms-transform: none !important;
+  }
+  .view head, .view head > title { display: block }
   section {
     position: absolute;
     pointer-events: none;
     width: 100%; height: 100%;
   }
+  .view section {
+    pointer-events: auto;
+    position: static;
+    width: 800px; height: 600px;
+    margin: -150px -200px;
+    float: left;
+
+    transform: scale(.4);
+    -moz-transform: scale(.4);
+    -webkit-transform: scale(.4);
+    -o-transform: scale(.4);
+    -ms-transform: scale(.4);
+  }
+  .view section > * { pointer-events: none; }
   section[aria-selected] { pointer-events: auto; }
   html { overflow: hidden; }
-  body { display: none; }
+  html.view { overflow: visible; }
   body.loaded { display: block; }
   .incremental {visibility: hidden; }
   .incremental[active] {visibility: visible; }
+  #progress-bar{
+    bottom: 0;
+    position: absolute;
+    -moz-transition: width 400ms linear 0s;
+    -webkit-transition: width 400ms linear 0s;
+    -ms-transition: width 400ms linear 0s;
+    transition: width 400ms linear 0s;
+  }
+  .view #progress-bar {
+    display: none;
+  }
 </style>
 
 <script>
@@ -136,7 +230,9 @@
     remoteWindows: [],
     idx: -1,
     step: 0,
+    html: null,
     slides: null,
+    progressBar : null,
     params: {
       autoplay: "1"
     }
@@ -144,19 +240,25 @@
 
   Dz.init = function() {
     document.body.className = "loaded";
-    this.slides = $$("body > section");
+    this.slides = Array.prototype.slice.call($$("body > section"));
+    this.progressBar = $("#progress-bar");
+    this.html = document.body.parentNode;
     this.setupParams();
     this.onhashchange();
     this.setupTouchEvents();
     this.onresize();
+    this.setupView();
   }
-  
+
   Dz.setupParams = function() {
     var p = window.location.search.substr(1).split('&');
     p.forEach(function(e, i, a) {
       var keyVal = e.split('=');
       Dz.params[keyVal[0]] = decodeURIComponent(keyVal[1]);
     });
+  // Specific params handling
+    if (!+this.params.autoplay)
+      $$.forEach($$("video"), function(v){ v.controls = true });
   }
 
   Dz.onkeydown = function(aEvent) {
@@ -167,7 +269,6 @@
       || aEvent.shiftKey) {
       return;
     }
-    console.log("keycode", aEvent.keyCode);
     if ( aEvent.keyCode == 37 // left arrow
       || aEvent.keyCode == 38 // up arrow
       || aEvent.keyCode == 33 // page up
@@ -194,13 +295,15 @@
       aEvent.preventDefault();
       this.toggleContent();
     }
-
-    // Joshfire Factory additions:
-    // pressing S goes to "stage mode" 
-    if (aEvent.keyCode == 83) { // S
+    if (aEvent.keyCode == 70) { // f
       aEvent.preventDefault();
-      this.gotoOnStage();
+      this.goFullscreen();
     }
+    if (aEvent.keyCode == 79) { // o
+      aEvent.preventDefault();
+      this.toggleView();
+    }
+    
   }
 
   /* Touch Events */
@@ -232,6 +335,16 @@
         }
       }
     }
+  }
+
+  Dz.setupView = function() {
+    document.body.addEventListener("click", function ( e ) {
+      if (!Dz.html.classList.contains("view")) return;
+      if (!e.target || e.target.nodeName != "SECTION") return;
+
+      Dz.html.classList.remove("view");
+      Dz.setCursor(Dz.slides.indexOf(e.target) + 1);
+    }, false);
   }
 
   /* Adapt the size of the slides to the window */
@@ -319,6 +432,7 @@
         newidx++;
       }
     }
+    this.setProgress(newidx, newstep);
     if (newidx != this.idx) {
       this.setSlide(newidx);
     }
@@ -364,6 +478,14 @@
     this.setCursor(lastIdx, lastStep);
   }
 
+  Dz.toggleView = function() {
+    this.html.classList.toggle("view");
+
+    if (this.html.classList.contains("view")) {
+      $("section[aria-selected]").scrollIntoView(true);
+    }
+  }
+
   Dz.setSlide = function(aIdx) {
     this.idx = aIdx;
     var old = $("section[aria-selected]");
@@ -377,6 +499,9 @@
     }
     if (next) {
       next.setAttribute("aria-selected", "true");
+      if (this.html.classList.contains("view")) {
+        next.scrollIntoView();
+      }
       var video = next.$("video");
       if (video && !!+this.params.autoplay) {
         video.play();
@@ -394,9 +519,9 @@
     if (old) {
       old.removeAttribute('aria-selected');
     }
-    var incrementals = this.slides[this.idx - 1].$$('.incremental');
+    var incrementals = $$('.incremental');
     if (this.step <= 0) {
-      incrementals.forEach(function(aNode) {
+      $$.forEach(incrementals, function(aNode) {
         aNode.removeAttribute('active');
       });
       return;
@@ -406,7 +531,7 @@
       next.setAttribute('aria-selected', true);
       next.parentNode.setAttribute('active', true);
       var found = false;
-      incrementals.forEach(function(aNode) {
+      $$.forEach(incrementals, function(aNode) {
         if (aNode != next.parentNode)
           if (found)
             aNode.removeAttribute('active');
@@ -420,6 +545,24 @@
     }
     return next;
   }
+
+  Dz.goFullscreen = function() {
+    var html = $('html'),
+        requestFullscreen = html.requestFullscreen || html.requestFullScreen || html.mozRequestFullScreen || html.webkitRequestFullScreen;
+    if (requestFullscreen) {
+      requestFullscreen.apply(html);
+    }
+  }
+  
+  Dz.setProgress = function(aIdx, aStep) {
+    var slide = $("section:nth-of-type("+ aIdx +")");
+    if (!slide)
+      return;
+    var steps = slide.$$('.incremental > *').length + 1,
+        slideSize = 100 / (this.slides.length - 1),
+        stepSize = slideSize / steps;
+    this.progressBar.style.width = ((aIdx - 1) * slideSize + aStep * stepSize) + '%';
+  }
   
   Dz.postMsg = function(aWin, aMsg) { // [arg0, [arg1...]]
     aMsg = [aMsg];
@@ -427,21 +570,16 @@
       aMsg.push(encodeURIComponent(arguments[i]));
     aWin.postMessage(aMsg.join(" "), "*");
   }
-
-  /**
-   * Goes to the onstage view
-   * Added by Joshfire, not so much in the spirit of DZ Slides as this page should be independent
-   */
-  Dz.gotoOnStage = function() {
-    //
-    window.location.href = "onstage.html#" + window.location.href;
+  
+  function init() {
+    Dz.init();
+    window.onkeydown = Dz.onkeydown.bind(Dz);
+    window.onresize = Dz.onresize.bind(Dz);
+    window.onhashchange = Dz.onhashchange.bind(Dz);
+    window.onmessage = Dz.onmessage.bind(Dz);
   }
 
-  window.onload = Dz.init.bind(Dz);
-  window.onkeydown = Dz.onkeydown.bind(Dz);
-  window.onresize = Dz.onresize.bind(Dz);
-  window.onhashchange = Dz.onhashchange.bind(Dz);
-  window.onmessage = Dz.onmessage.bind(Dz);
+  window.onload = init;
 </script>
 
 
@@ -479,11 +617,8 @@
     return this.querySelectorAll(aQuery);
   }).bind(document);
 
-  NodeList.prototype.forEach = function(fun) {
-    if (typeof fun !== "function") throw new TypeError();
-    for (var i = 0; i < this.length; i++) {
-      fun.call(this, this[i]);
-    }
+  $$.forEach = function(nodeList, fun) {
+    Array.prototype.forEach.call(nodeList, fun);
   }
 
 </script>

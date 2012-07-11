@@ -3,15 +3,16 @@
 <meta charset="utf8">
 <title>...</title>
 
-<h1 id="title">...</h1>
-<iframe></iframe>
+<div id="slides">
+  <iframe allowfullscreen mozallowfullscreen webkitallowfullscreen></iframe>
+</div>
 <div id="controls">
   <button title="prev" id="back" onclick="Dz.back()">&#9664;</button>
   <button title="next" id="forward" onclick="Dz.forward()">&#9654;</button>
-  <p id="rightcontrols">
+  <div id="rightcontrols">
     <input onchange="Dz.setCursor(this.value)" size="2" id="slideidx" value="0" />/<span id="slidecount">...</span>
-    <button title="Open in a new window" id="popup" onclick="Dz.popup()">&#8689;</button>
-  </p>
+    <button title="Go fullscreen or open in a new window" id="fullscreen" onclick="Dz.goFullscreen()">&#8689;</button>
+  </div>
 </div>
 
 <style>
@@ -20,41 +21,34 @@
     margin: 0;
     background-color: black;
     height: 100%;
-    display: -moz-box;
-    display: -webkit-box;
-    display: box;
-    -moz-box-orient: vertical;
-    -webkit-box-orient: vertical;
-    box-orient: vertical;
     width: 100%;
   }
-  iframe {
-    -moz-box-flex : 1;
-    -webkit-box-flex : 1;
-    box-flex : 1;
-    background-color: white;
-    border: none;
-    width: 100%;
-    display: block;
-    /* For IE: */
-    height: 80%;
-  }
-
-  #title {
-    font-weight: normal;
-    font-family: monospace;
-    margin: 0px;
-    font-size: 19px;
-    text-align: left;
-  }
-  #title, #controls {
-    color: white;
-    padding: 5px;
-    position: relative;
+  #slides, #controls {
+    left: 0;
+    position: absolute;
+    right: 0;
   }
   #controls {
+    color: white;
     font-family: monospace;
-    font-size: 12px;
+    height: 30px;
+    line-height: 30px;
+    padding: 5px;
+  }
+  #slides {
+    bottom: 40px;
+    top: 0;
+  }
+  iframe {
+    border: none;
+    background-color: white;
+    height: 100%;
+    width: 100%;
+  }
+  #controls {
+    bottom: 0;
+    float: right;
+    font-size: 13px;
     text-align: center;
   }
   #controls button[disabled] {color: #333;}
@@ -88,11 +82,12 @@
   }
   #rightcontrols * { vertical-align: middle; }
   #rightcontrols {
+    bottom: 4px;
     position: absolute;
-    top: -5px;
+    top: 4px;
     right: 10px;
   }
-  #popup {-moz-transform: scaleX(-1);-webkit-transform: scaleX(-1);-o-transform: scaleX(-1);-ms-transform: scaleX(-1);transform: scaleX(-1);}
+  #fullscreen {-moz-transform: scaleX(-1);-webkit-transform: scaleX(-1);-o-transform: scaleX(-1);-ms-transform: scaleX(-1);transform: scaleX(-1);}
 </style>
 
 <script>
@@ -100,7 +95,8 @@
     view: null,
     url: null,
     idx: 1,
-    count: null
+    count: null,
+    iframe: null
   };
   
   Dz.init = function() {
@@ -141,6 +137,10 @@
       aEvent.preventDefault();
       this.toggleContent();
     }
+    if (aEvent.keyCode == 70) { // f
+      aEvent.preventDefault();
+      this.goFullscreen();
+    }
   }
   
   Dz.onmessage = function(aEvent) {
@@ -157,7 +157,7 @@
       }
       if (argv[0] === "REGISTERED" && argc === 3) {
         $("#slidecount").innerHTML = this.count = argv[2];
-        document.title = $("#title").innerHTML = argv[1];
+        document.title = argv[1];
       }
     }
   }
@@ -167,7 +167,7 @@
   Dz.getUrl = function() {
     var u = window.location.hash.split("#")[1];
     if (!u) {
-      u = window.location.origin + window.location.pathname.split("embedded.html")[0];
+      u = window.prompt("What is the URL of the slides?");
       if (u) {
         window.location.hash = u.split("#")[0];
         return u;
@@ -181,9 +181,9 @@
   }
   
   Dz.loadIframe = function() {
-    var iframe = $("iframe");
-    iframe.src = this.url = this.getUrl();
-    iframe.onload = function() {
+    this.iframe = $("iframe");
+    this.iframe.src = this.url = this.getUrl();
+    this.iframe.onload = function() {
       Dz.view = this.contentWindow;
       Dz.postMsg(Dz.view, "REGISTER");
     }
@@ -217,8 +217,13 @@
     this.postMsg(this.view, "SET_CURSOR", aCursor);
   }
 
-  Dz.popup = function() {
-    window.open(this.url + "#" + this.idx, '', 'width=800,height=600,personalbar=0,toolbar=0,scrollbars=1,resizable=1');
+  Dz.goFullscreen = function() {
+    var requestFullscreen = this.iframe.requestFullscreen || this.iframe.requestFullScreen || this.iframe.mozRequestFullScreen || this.iframe.webkitRequestFullScreen;
+    if (requestFullscreen) {
+      requestFullscreen.apply(this.iframe);
+    } else {
+      window.open(this.url + "#" + this.idx, '', 'width=800,height=600,personalbar=0,toolbar=0,scrollbars=1,resizable=1');
+    }
   }
   
   Dz.postMsg = function(aWin, aMsg) { // [arg0, [arg1...]]
@@ -227,11 +232,15 @@
       aMsg.push(encodeURIComponent(arguments[i]));
     aWin.postMessage(aMsg.join(" "), "*");
   }
-  
-  window.onload = Dz.init.bind(Dz);
-  window.onkeydown = Dz.onkeydown.bind(Dz);
-  window.onhashchange = Dz.loadIframe.bind(Dz);
-  window.onmessage = Dz.onmessage.bind(Dz);
+
+  function init() {
+    Dz.init();
+    window.onkeydown = Dz.onkeydown.bind(Dz);
+    window.onhashchange = Dz.loadIframe.bind(Dz);
+    window.onmessage = Dz.onmessage.bind(Dz);
+  }
+
+  window.onload = init;
 </script>
 
 

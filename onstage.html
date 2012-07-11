@@ -205,8 +205,7 @@
     if (argv[0] === "CURSOR" && argc === 2) {
       if (aEvent.source === this.views.present) {
         var cursor = argv[1].split(".");
-        if (this.idx != ~~cursor[0])
-          this.postMsg(this.views.present, "GET_NOTES");
+        this.postMsg(this.views.present, "GET_NOTES");
         this.idx = ~~cursor[0];
         this.step = ~~cursor[1];
         $("#slideidx").innerHTML = argv[1];
@@ -214,7 +213,7 @@
         if (this.views.remote)
           this.postMsg(this.views.remote, "SET_CURSOR", argv[1]);
       } else {
-        $("#nextslideidx").innerHTML = argv[1];
+        $("#nextslideidx").innerHTML = +argv[1] < 0 ? "END" : argv[1];
       }
     }
     if (aEvent.source === this.views.present) {
@@ -230,7 +229,7 @@
   Dz.getUrl = function() {
     var u = window.location.hash.split("#")[1];
     if (!u) {
-      u = window.location.origin + window.location.pathname.split("onstage.html")[0];
+      u = window.prompt("What is the URL of the slides?");
       if (u) {
         window.location.hash = u.split("#")[0];
         return u;
@@ -309,11 +308,15 @@
       $("#seconds").innerHTML = addZero(now.getSeconds());
     }, 1000);
   }
-  
-  window.onload = Dz.init.bind(Dz);
-  window.onkeydown = Dz.onkeydown.bind(Dz);
-  window.onhashchange = Dz.loadIframes.bind(Dz);
-  window.onmessage = Dz.onmessage.bind(Dz);
+
+  function init() {
+    Dz.init();
+    window.onkeydown = Dz.onkeydown.bind(Dz);
+    window.onhashchange = Dz.loadIframes.bind(Dz);
+    window.onmessage = Dz.onmessage.bind(Dz);
+  }
+
+  window.onload = init;
 </script>
 
 
@@ -350,12 +353,5 @@
   var $$ = (HTMLElement.prototype.$$ = function(aQuery) {
     return this.querySelectorAll(aQuery);
   }).bind(document);
-
-  NodeList.prototype.forEach = function(fun) {
-    if (typeof fun !== "function") throw new TypeError();
-    for (var i = 0; i < this.length; i++) {
-      fun.call(this, this[i]);
-    }
-  }
 
 </script>
